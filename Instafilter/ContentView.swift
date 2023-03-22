@@ -9,23 +9,56 @@ import CoreImage.CIFilterBuiltins
 import SwiftUI
 
 struct ContentView: View {
+    @State private var filterIntesity = 0.5
     @State private var image: Image?
     @State private var showingImagePicker = false
     @State private var inputImage : UIImage?
+ 
     var body: some View {
-        VStack {
-            image?
-                .resizable()
-                .scaledToFit()
+        NavigationView {
+            VStack {
+                ZStack {
+                    Rectangle()
+                        .fill(.secondary)
 
-            Button("Select Image") {
-               showingImagePicker = true
+                    Text("Tap to select a picture")
+                        .foregroundColor(.white)
+                        .font(.headline)
+
+                    image?
+                        .resizable()
+                        .scaledToFit()
+                }
+                .onTapGesture {
+                    // select an image
+                }
+
+                HStack {
+                    Text("Intensity")
+                    Slider(value: $filterIntesity)
+                }
+                .padding(.vertical)
+
+                HStack {
+                    Button("Change Filter") {
+                        // change filter
+                    }
+
+                    Spacer()
+
+                    Button("Save") {
+                        // save the picture
+                    }
+                }
             }
+            .padding([.horizontal, .bottom])
+            .navigationTitle("Instafilter")
         }
-        .sheet(isPresented: $showingImagePicker) {
-            ImagePicker(image: $inputImage)
+        
+        func save() {
+            Button("Save" , action: save)
         }
-        .onChange(of: inputImage) {_ in loadImage() }
+        
     }
     
     func loadImage () {
