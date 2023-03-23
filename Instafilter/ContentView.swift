@@ -4,71 +4,45 @@
 //
 //  Created by Yashraj jadhav on 13/03/23.
 //
-import CoreImage
-import CoreImage.CIFilterBuiltins
+import PhotosUI
 import SwiftUI
 
-struct ContentView: View {
-    @State private var filterIntesity = 0.5
-    @State private var image: Image?
-    @State private var showingImagePicker = false
-    @State private var inputImage : UIImage?
- 
-    var body: some View {
-        NavigationView {
-            VStack {
-                ZStack {
-                    Rectangle()
-                        .fill(.secondary)
+struct ImagePicker: UIViewControllerRepresentable {
+    @Binding var image: UIImage?
 
-                    Text("Tap to select a picture")
-                        .foregroundColor(.white)
-                        .font(.headline)
+    func makeUIViewController(context: Context) -> PHPickerViewController {
+        var config = PHPickerConfiguration()
+        config.filter = .images
+        let picker = PHPickerViewController(configuration: config)
+        picker.delegate = context.coordinator
+        return picker
+    }
 
-                    image?
-                        .resizable()
-                        .scaledToFit()
-                }
-                .onTapGesture {
-                    // select an image
-                }
+    func updateUIViewController(_ uiViewController: PHPickerViewController, context: Context) {
 
-                HStack {
-                    Text("Intensity")
-                    Slider(value: $filterIntesity)
-                }
-                .padding(.vertical)
+    }
 
-                HStack {
-                    Button("Change Filter") {
-                        // change filter
-                    }
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
 
-                    Spacer()
+    class Coordinator: NSObject, PHPickerViewControllerDelegate {
+        let parent: ImagePicker
 
-                    Button("Save") {
-                        // save the picture
-                    }
+        init(_ parent: ImagePicker) {
+            self.parent = parent
+        }
+
+        func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+            picker.dismiss(animated: true)
+
+            guard let provider = results.first?.itemProvider else { return }
+
+            if provider.canLoadObject(ofClass: UIImage.self) {
+                provider.loadObject(ofClass: UIImage.self) { image, _ in
+                    self.parent.image = image as? UIImage
                 }
             }
-            .padding([.horizontal, .bottom])
-            .navigationTitle("Instafilter")
         }
-        
-        func save() {
-            Button("Save" , action: save)
-        }
-        
-    }
-    
-    func loadImage () {
-        guard let inputImage = inputImage else {return}
-        image = Image(uiImage: inputImage)
-    }
-}
-
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
     }
 }
