@@ -12,6 +12,7 @@ import PhotosUI
 
 struct ImagePicker : UIViewControllerRepresentable {
     @Binding var image : UIImage?
+   
     
     class Coordinator : NSObject , PHPickerViewControllerDelegate {
         
@@ -32,8 +33,6 @@ struct ImagePicker : UIViewControllerRepresentable {
                 }
             }
         }
-        
-        
     }
 
     
@@ -56,3 +55,4 @@ struct ImagePicker : UIViewControllerRepresentable {
     }
     
 }
+
